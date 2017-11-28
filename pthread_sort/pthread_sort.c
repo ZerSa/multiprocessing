@@ -187,8 +187,6 @@ int main (int argc, char **argv){
 
 	int *data = calloc(n, sizeof(int));
 	assert(data);
-	int *sorted_data = calloc(n, sizeof(int)); 
-	assert(sorted_data);
 	
 //    FILE *f_stats = fopen("time_P.txt", "w");
 	
