@@ -14,8 +14,9 @@ typedef struct scalar_ctx_t{
 	double p;
 } scalar_ctx_t;
 
+//обычный merge двух подмассивов input в output
 void merge(int* input, int* output, int l1, int r1, int l2, int r2, int s){
-    int i = 0, j = 0; //s - where start to write in output
+    int i = 0, j = 0; //s - индекс, с которого начинаем запись в output
     while((l1 + i <= r1) && (l2 + j <= r2)){
         if (input[l1 + i] < input[l2 + j]){
             output[s + i + j] = input[l1 + i];
@@ -100,8 +101,8 @@ int comporator (const void * a, const void * b) {
 }
 
 void omp_sort(int *input, int *output, int l, int r, int chunk_size, int s){
-    int n = r - l + 1;
-    if (r - l <= chunk_size){//s - where start to write in output
+    int n = r - l + 1;// s - индекс, c которого начинаем запись в output
+    if (r - l <= chunk_size){
         qsort(&input[l], n, sizeof(int), comporator);
         memcpy(&output[s], &input[l], n*sizeof(int));
         return;
