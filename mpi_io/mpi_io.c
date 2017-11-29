@@ -27,7 +27,8 @@ void mpi_io(void *context){
         int *seeds = malloc(comm_size * sizeof(int));
         assert(seeds);
         
-        for(int i = 0; i < comm_size; ++i){
+	int i;
+        for(i = 0; i < comm_size; ++i){
             seeds[i] = seed + i;
         }
         
@@ -42,7 +43,8 @@ void mpi_io(void *context){
     }
     
     srand(seed);
-    for(int i = 0; i < ctx->N; ++i){
+    int i;
+    for(i = 0; i < ctx->N; ++i){
         int x = rand() % ctx->l;
         int y = rand() % ctx->l;
         int r = rand() % ctx->a*ctx->b;
