@@ -101,14 +101,14 @@ void parallel_merge(int *input, int* output, int l1, int r1, int l2, int r2, int
 
 
 
-int comporator (const void * a, const void * b) {
+int comparator (const void * a, const void * b) {
     return ( *(int*)a - *(int*)b );
 }
 
 void omp_sort(int *input, int *output, int l, int r, int chunk_size, int s){
     int n = r - l + 1;
     if (r - l <= chunk_size){
-        qsort(&input[l], n, sizeof(int), comporator);
+        qsort(&input[l], n, sizeof(int), comparator);
         memcpy(&output[s], &input[l], n*sizeof(int));
         return;
     }
@@ -185,7 +185,7 @@ int main (int argc, char **argv){
 	
 	/*
 	double start = omp_get_wtime();
-    qsort(data, n, sizeof(int), comporator);
+    qsort(data, n, sizeof(int), comparator);
 	double end = omp_get_wtime();
 	double quicksort_time = end - start;
 	fprintf(f_data, "%f\n", quicksort_time);
