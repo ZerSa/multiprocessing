@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct scalar_ctx_t{
 	int n;
@@ -14,10 +15,9 @@ typedef struct scalar_ctx_t{
 	double p;
 } scalar_ctx_t;
 
-//обычный merge двух подмассивов input в output
 void merge(int* input, int* output, int l1, int r1, int l2, int r2, int s){
-    int i = 0, j = 0; //s - индекс, с которого начинаем запись в output
-    while((l1 + i <= r1) && (l2 + j <= r2)){
+    int i = 0, j = 0;
+    while((l1 + i < r1 + 1) && (l2 + j < r2 + 1)){
         if (input[l1 + i] < input[l2 + j]){
             output[s + i + j] = input[l1 + i];
             i++;
@@ -28,35 +28,38 @@ void merge(int* input, int* output, int l1, int r1, int l2, int r2, int s){
         }
     }
     
-    while(l1 + i <= r1){
+    while(l1 + i < r1 + 1){
         output[s + i + j] = input[l1 + i];
         i++;
     }
     
-    while(l2 + j <= r2){
+    while(l2 + j < r2 + 1){
         output[s + i + j] = input[l2 + j];
         j++;
     }
 }
-    
-int binary_search(int *data, int x, int l, int r){
-    if (r - l <= 1){
-        if (data[l] < x){
-            return r;
+
+int binary_search (int *data, int x, int l_, int r_) {
+    int l = l_;
+    int r = r_;
+    int h;
+    if (l > r + 1)
+        h = l;
+    else
+        h = r + 1;
+        
+    while (l < h) {
+        int m = (l + h) / 2;
+        if (x <= data[m]) {
+            h = m;
         }
-        else{
-            return l;
+        else {
+            l = m + 1;
         }
     }
-    
-    int m = (l + r)/2;
-    if (data[m] < x){
-        return binary_search(data, x, m, r);
-    }
-    else{
-        return binary_search(data, x, l, m);
-    }
-}  
+    return h;
+}
+ 
 
 void swap (int* a, int* b) {
 	int c = *a;
@@ -77,6 +80,8 @@ void parallel_merge(int *input, int* output, int l1, int r1, int l2, int r2, int
     int m2 = binary_search(input, input[m1], l2, r2);
     int m3 = s + m1 - l1 + m2 - l2;
     
+    output[m3] = input[m1];
+    
     #pragma omp parallel
     {
         #pragma omp sections nowait
@@ -87,7 +92,7 @@ void parallel_merge(int *input, int* output, int l1, int r1, int l2, int r2, int
             }
             #pragma omp section
             {
-                merge(input, output, m1, r1, m2, r2, m3);
+                merge(input, output, m1 + 1, r1, m2, r2, m3 + 1);
             }
         }
     }
@@ -96,19 +101,20 @@ void parallel_merge(int *input, int* output, int l1, int r1, int l2, int r2, int
 
 
 
-int comparator (const void * a, const void * b) {
+int comporator (const void * a, const void * b) {
     return ( *(int*)a - *(int*)b );
 }
 
 void omp_sort(int *input, int *output, int l, int r, int chunk_size, int s){
-    int n = r - l + 1;// s - индекс, c которого начинаем запись в output
+    int n = r - l + 1;
     if (r - l <= chunk_size){
-        qsort(&input[l], n, sizeof(int), comparator);
+        qsort(&input[l], n, sizeof(int), comporator);
         memcpy(&output[s], &input[l], n*sizeof(int));
         return;
     }
     
     int *tmp = (int *)malloc(n * sizeof(int)); 
+    assert(tmp);
     int m = (l + r)/2;
      
     #pragma omp parallel
