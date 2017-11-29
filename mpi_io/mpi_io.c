@@ -86,20 +86,19 @@ void mpi_io(void *context){
 int main(int argc, char **argv){
     MPI_Init(&argc, &argv);
     
-    if (argc != 5)
-        return 0;
+    if (argc == 5){
     
-    scalar_ctx_t ctx = {
-        .l = atoi(argv[1]),
-		.a = atoi(argv[2]),
-		.b = atoi(argv[3]),
-		.N = atoi(argv[4]),
-		.d = 0
+    	scalar_ctx_t ctx = {
+            .l = atoi(argv[1]),
+   	    .a = atoi(argv[2]),
+	    .b = atoi(argv[3]),
+	    .N = atoi(argv[4]),
+	    .d = 0
 	}; 
 	
 	ctx.d = calloc(ctx.l * ctx.l * ctx.a * ctx.b, sizeof(int));
 	mpi_io(&ctx);
-	
-	MPI_Finalize();
-	return 0;
+    }
+    MPI_Finalize();
+    return 0;
 }
