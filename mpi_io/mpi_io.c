@@ -23,15 +23,16 @@ void mpi_io(void *context){
     if (!comm_rank){
         int  comm_size;
         MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
-	
-	if (comm_size != ctx->a * ctx->b) {
-	    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-	}
+        if (comm_size != ctx->a * ctx->b) {
+			MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+		}
         
         int *seeds = malloc(comm_size * sizeof(int));
         assert(seeds);
         
-	int i;
+        seed = time(NULL);
+        
+        int i;
         for(i = 0; i < comm_size; ++i){
             seeds[i] = seed + i;
         }
